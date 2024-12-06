@@ -107,7 +107,7 @@ function initMap(chinaJson) {
 
         province.add(mesh);
         // 加上边框线条，鼠标事件无法定位到mesh对象
-        province.add(line);
+        // province.add(line);
       });
     });
     // 将geojson的properties放到模型中，后面会用到
@@ -123,7 +123,7 @@ function initMap(chinaJson) {
       });
 
       const textMesh = new THREE.Mesh(textGeo, materials);
-      textMesh.position.set(x - 0.05, -y, 0.12);
+      textMesh.position.set(x - 0.05, -y, 0.15);
       textMesh.rotateX(1);
       province.add(textMesh);
     }
@@ -132,7 +132,7 @@ function initMap(chinaJson) {
 }
 
 function randomColor() {
-  return '#' + Math.floor(Math.random() * 16777215).toString(16);
+  return '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
 }
 
 const materials = [

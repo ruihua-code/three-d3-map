@@ -1,28 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <style>
-      html,
-      body {
-        margin: 0;
-        padding: 0;
-        overflow: hidden;
-      }
-    </style>
-    <title>Document</title>
-  </head>
-  <body>
-    <script type="importmap">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+  </style>
+  <title>Document</title>
+</head>
+
+<body>
+  <script type="importmap">
       {
         "imports": {
           "three": "./js/three.module.js",
-          "three/addons/": "./js/jsm/"
+          "three/addons/": "./js/jsm/",
+          "gsap": "./js/gsap-core.js"
         }
       }
     </script>
-    <script src="index.js" type="module"></script>
-  </body>
+  <script src="index.js" type="module"></script>
+</body>
+
 </html>
