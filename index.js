@@ -5,7 +5,7 @@ import { FontLoader } from 'three/addons/loaders/FontLoader.js';
 import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
 import addEvent from './event.js';
 
-const BACKGROUND_COLOR = '#1d1d1d';
+const BACKGROUND_COLOR = '#a0a0a0';
 let textFont = null;
 async function fontLoader() {
   return new Promise((resolve, reject) => {
@@ -23,6 +23,7 @@ await fontLoader();
 var w = window.innerWidth;
 var h = window.innerHeight;
 var scene = new THREE.Scene();
+scene.fog = new THREE.Fog(0xa0a0a0, 1, 500); //雾
 window.scene = scene;
 var renderer = new THREE.WebGLRenderer({
   antialias: true,
@@ -48,7 +49,7 @@ function loadGeoJSON(url) {
     .catch((error) => console.error('Error loading geojson:', error));
 }
 
-loadGeoJSON('zhenzhou.geojson');
+loadGeoJSON('zz.json');
 
 function animate() {
   requestAnimationFrame(animate);
@@ -70,6 +71,7 @@ function initMap(chinaJson) {
   chinaJson.features.forEach((elem) => {
     // 新建一个省份容器：用来存放省份对应的模型和轮廓线
     const province = new THREE.Object3D();
+
     const coordinates = elem.geometry.coordinates;
     coordinates.forEach((multiPolygon, index) => {
       multiPolygon.forEach((polygon) => {
@@ -90,12 +92,13 @@ function initMap(chinaJson) {
 
         console.log('index:', index, index % 2);
         const extrudeSettings = {
-          depth: index % 2 === 0 ? 0.1 : 0.11,
+          depth: 0.1,
           bevelEnabled: false,
         };
         const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
         const material = new THREE.MeshBasicMaterial({
           color: randomColor(),
+
           transparent: true,
           opacity: 1,
         });
@@ -103,11 +106,13 @@ function initMap(chinaJson) {
           linePoints
         );
         const mesh = new THREE.Mesh(geometry, material);
+        mesh.name =`city_${elem.properties.name}` ;
         const line = new THREE.Line(lineGeometry, lineMaterial);
+        line.raycast = () => {};
+        // 加上边框线条，鼠标事件无法定位到mesh对象
 
         province.add(mesh);
-        // 加上边框线条，鼠标事件无法定位到mesh对象
-        // province.add(line);
+        province.add(line);
       });
     });
     // 将geojson的properties放到模型中，后面会用到
@@ -125,14 +130,22 @@ function initMap(chinaJson) {
       const textMesh = new THREE.Mesh(textGeo, materials);
       textMesh.position.set(x - 0.05, -y, 0.15);
       textMesh.rotateX(1);
+
+      province.scale.set(5, 5, 5);
       province.add(textMesh);
     }
+    addPlan();
     scene.add(province);
   });
 }
 
 function randomColor() {
-  return '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
+  return (
+    '#' +
+    Math.floor(Math.random() * 16777215)
+      .toString(16)
+      .padStart(6, '0')
+  );
 }
 
 const materials = [
@@ -141,3 +154,19 @@ const materials = [
 ];
 
 addEvent(renderer, scene, camera);
+
+function addPlan() {
+  const geometry = new THREE.CircleGeometry(50, 50);
+  const load = new THREE.TextureLoader();
+  const texture = load.load('./images/bg.png');
+
+  const material = new THREE.MeshBasicMaterial({
+    map: texture,
+    side: THREE.FrontSide,
+  });
+
+  const mesh = new THREE.Mesh(geometry, material);
+  mesh.name = 'bg';
+
+  scene.add(mesh);
+}
